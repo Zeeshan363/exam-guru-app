@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Institution {
+  id         Int         @id @default(autoincrement())
+  name       String
+  address    String
+  users      User[]
+  students   Student[]
+  teachers   Teacher[]
+  courses    Course[]
+  branches   Branch[]
+  gates      Gate[]
+  exams      Exam[]
+}
+
+model User {
+  id             Int          @id @default(autoincrement())
+  name           String
+  role           Role
+  profilePicture String
+  password       String
+  contact        String       @unique
+  institutionId  Int
+  institution    Institution  @relation(fields: [institutionId], references: [id])
+  classroomId    Int?
+  classroom      Classroom?   @relation(fields: [classroomId], references: [id])
+  student        Student?     // Optional relation for students
+  teacher        Teacher?     // Optional relation for teachers
+}
+
+model Student {
+  id               Int          @id @default(autoincrement())
+  profilePicture   String
+  name             String
+  rollNo           String       @unique
+  contactNo        String
+  whatsappNo       String
+  parentContactNo  String
+  parentWhatsappNo String
+  gender           String
+  email            String
+  password         String
+  classroomId      Int
+  classroom        Classroom    @relation(fields: [classroomId], references: [id])
+  sectionId        Int
+  section          Section      @relation(fields: [sectionId], references: [id])
+  branchId         Int
+  branch           Branch       @relation(fields: [branchId], references: [id])
+  institutionId    Int
+  institution      Institution  @relation(fields: [institutionId], references: [id])
+  userId           Int          @unique
+  user             User         @relation(fields: [userId], references: [id])
+  courses          Course[]     // Many-to-many relationship
+  attendances      Attendance[]
+
+  Gate Gate[]
+}
+
+model Teacher {
+  id               Int          @id @default(autoincrement())
+  name             String
+  profilePicture   String
+  contactNo        String
+  whatsappNo       String
+  gender           String
+  email            String
+  password         String
+  classrooms       Classroom[]  // Many-to-many relationship
+  branchId         Int
+  branch           Branch       @relation(fields: [branchId], references: [id])
+  institutionId    Int
+  institution      Institution  @relation(fields: [institutionId], references: [id])
+  userId           Int          @unique
+  user             User         @relation(fields: [userId], references: [id])
+}
+
+model Course {
+  id             Int         @id @default(autoincrement())
+  name           String
+  institutionId  Int
+  institution    Institution @relation(fields: [institutionId], references: [id])
+  students       Student[]   // Many-to-many relationship
+  classrooms     Classroom[] // Many-to-many relationship
+}
+
+model Attendance {
+  id            Int         @id @default(autoincrement())
+  arrivalTime   DateTime
+  departureTime DateTime
+  gateId        Int
+  gate          Gate        @relation(fields: [gateId], references: [id])
+  studentId     Int
+  student       Student     @relation(fields: [studentId], references: [id])
+  examId        Int?
+  exam          Exam?       @relation(fields: [examId], references: [id])
+}
+
+model Exam {
+  id              Int         @id @default(autoincrement())
+  name            String
+  startTime       DateTime
+  endTime         DateTime
+  duration        Int
+  showResultAfter Boolean
+  sendResult      Boolean
+  institutionId   Int
+  institution     Institution @relation(fields: [institutionId], references: [id])
+  attendances     Attendance[]
+}
+
+model Gate {
+  id             Int         @id @default(autoincrement())
+  no             String
+  password       String
+  institutionId  Int
+  institution    Institution @relation(fields: [institutionId], references: [id])
+  students       Student[]
+
+  Attendance Attendance[]
+}
+
+model Branch {
+  id             Int         @id @default(autoincrement())
+  name           String
+  address        String
+  institutionId  Int
+  institution    Institution @relation(fields: [institutionId], references: [id])
+  students       Student[]
+  teachers       Teacher[]
+}
+
+model Classroom {
+  id         Int         @id @default(autoincrement())
+  name       String
+  students   Student[]   // One-to-many relationship
+  teachers   Teacher[]   // Many-to-many relationship
+  courses    Course[]    // Many-to-many relationship
+  sections   Section[]   // One-to-many relationship
+
+  User User[]
+}
+
+model Section {
+  id         Int         @id @default(autoincrement())
+  name       String
+  students   Student[]   // One-to-many relationship
+  classroomId Int
+  classroom  Classroom   @relation(fields: [classroomId], references: [id])
+}
+
+enum Role {
+  admin
+  staff
+  teacher
+  student
+}
