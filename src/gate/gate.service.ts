@@ -1,15 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateGateDto } from './dto/create-gate.dto';
 import { UpdateGateDto } from './dto/update-gate.dto';
+import { DatabaseService } from 'src/database/database.service';
+import { PaginationService } from 'src/common/services/pagination.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class GateService {
-    create(CreateGateDto: CreateGateDto) {
-        return 'This action adds a new section';
+    constructor(
+        private prisma: DatabaseService, 
+        private paginationService: PaginationService
+    ){}
+
+    async create(CreateGateDto: CreateGateDto) {
+        try {
+            const result = await this.prisma.gate.create({
+              data: {
+                no: CreateGateDto.no,
+                password: CreateGateDto.password,
+                institutionId: CreateGateDto.institutionId
+              }
+            })
+            return {
+              id: result.id,
+              success: true,
+              message: "Gate created successfully"
+            }
+          } catch (error) {
+            return {
+              success: false,
+              message: "Gate creation failed" + error
+            }
+          }
     }
 
-    findAll() {
-        return `This action returns all section`;
+    async findAll(paginationDto: PaginationDto) {
+        try {
+            const result = await this.paginationService.paginate(
+            this.prisma.exam,
+            paginationDto,
+            {},
+            {}
+            );
+    
+            return result; 
+        } catch (error) {
+            throw new BadRequestException("Exams not found")
+        }
     }
 
     findOne(id: number) {
