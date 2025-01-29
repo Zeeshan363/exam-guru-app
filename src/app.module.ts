@@ -14,9 +14,10 @@ import { ExamsModule } from './exams/exams.module';
 import { BranchModule } from './branch/branch.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { SectionModule } from './section/section.module';
+import { GateModule } from './gate/gate.module';
 
 @Module({
-  imports: [DatabaseModule, AuthModule, InstitutionModule, UsersModule, StudentsModule, TeachersModule, CoursesModule, AttendanceModule, ExamsModule, BranchModule, ClassroomModule, SectionModule],
+  imports: [DatabaseModule, AuthModule, InstitutionModule, UsersModule, StudentsModule, TeachersModule, CoursesModule, AttendanceModule, ExamsModule, BranchModule, ClassroomModule, SectionModule, GateModule],
   controllers: [AppController],
   providers: [AppService, DatabaseService],
 })
