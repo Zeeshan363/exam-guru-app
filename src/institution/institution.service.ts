@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
@@ -75,6 +75,22 @@ export class InstitutionService {
         success: false,
         message: "Institution fetch failed" + error
       }
+    }
+  }
+  async remove(id: number) {
+    try{
+      const result = await this.prisma.institution.delete({
+        where: {
+          id
+        }
+      })
+      return {
+        success: true,
+        message: "Institution deleted successfully",
+        data: result
+      }
+    }catch(error){
+      throw new BadGatewayException("Internal server error")
     }
   }
 }

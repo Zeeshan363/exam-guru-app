@@ -45,4 +45,9 @@ export class InstitutionController {
   findOne(@Param('id') id: string) {
     return this.institutionService.findOne(+id);
   }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.institutionService.remove(+id);
+  }
 }

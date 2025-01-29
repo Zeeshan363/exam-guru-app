@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -46,7 +46,20 @@ export class SectionService {
     return `This action updates a #${id} section`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} section`;
+  async remove(id: number) {
+    try{
+      const result = await this.prisma.section.delete({
+        where: {
+          id
+        }
+      })
+      return {
+        success: true,
+        message: "section deleted successfully",
+        data: result
+      }
+    }catch(error){
+      throw new BadGatewayException("Internal server error")
+    }
   }
 }

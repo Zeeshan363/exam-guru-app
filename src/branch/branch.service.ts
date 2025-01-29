@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -76,7 +76,20 @@ export class BranchService {
     return `This action updates a #${id} branch`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} branch`;
+  async remove(id: number) {
+    try{
+      const result = await this.prisma.branch.delete({
+        where: {
+          id
+        }
+      })
+      return {
+        success: true,
+        message: "branch deleted successfully",
+        data: result
+      }
+    }catch(error){
+      throw new BadGatewayException("Internal server error")
+    }
   }
 }

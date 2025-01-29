@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -78,7 +78,20 @@ export class AttendanceService {
     return `This action updates a #${id} attendance`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} attendance`;
+  async remove(id: number) {
+    try{
+      const result = await this.prisma.attendance.delete({
+        where: {
+          id
+        }
+      })
+      return {
+        success: true,
+        message: "attendance deleted successfully",
+        data: result
+      }
+    }catch(error){
+      throw new BadGatewayException("Internal server error")
+    }
   }
 }
