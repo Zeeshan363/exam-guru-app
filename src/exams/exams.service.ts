@@ -77,8 +77,35 @@ export class ExamsService {
     }
   }
 
-  update(id: number, updateExamDto: UpdateExamDto) {
-    return `This action updates a #${id} exam`;
+  async update(id: number, updateExamDto: UpdateExamDto) {
+    try {
+      const { name, startTime, endTime, duration, showResultAfter, sendResult, institutionId } = updateExamDto;
+      const result = await this.prisma.exam.update({
+        where: {
+          id: id
+        },
+        data: {
+          name,
+          startTime,
+          endTime,
+          duration,
+          showResultAfter,
+          sendResult,
+          institutionId
+        }
+      });
+
+      return {
+        id: result.id,
+        success: true,
+        message: "Exam updated successfully"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Exam update failed: " + error
+      };
+    }
   }
 
   async remove(id: number) {

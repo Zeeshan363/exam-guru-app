@@ -74,8 +74,32 @@ export class AttendanceService {
     }
   }
 
-  update(id: number, updateAttendanceDto: UpdateAttendanceDto) {
-    return `This action updates a #${id} attendance`;
+  async update(id: number, updateAttendanceDto: UpdateAttendanceDto) {
+    try {
+      const result = await this.prisma.attendance.update({
+        where: {
+          id: id
+        },
+        data: {
+          arrivalTime: updateAttendanceDto.arrivalTime,
+          departureTime: updateAttendanceDto.departureTime,
+          gateId: updateAttendanceDto.gateId,
+          studentId: updateAttendanceDto.studentId,
+          examId: updateAttendanceDto.examId
+        }
+      });
+
+      return {
+        id: result.id,
+        success: true,
+        message: "Attendance updated successfully"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Attendance update failed: " + error
+      };
+    }
   }
 
   async remove(id: number) {

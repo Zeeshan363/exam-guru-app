@@ -70,8 +70,29 @@ export class ClassroomService {
     }
   }
 
-  update(id: number, updateClassroomDto: UpdateClassroomDto) {
-    return `This action updates a #${id} classroom`;
+  async update(id: number, updateClassroomDto: UpdateClassroomDto) {
+    try {
+      const { name } = updateClassroomDto;
+      const result = await this.prisma.classroom.update({
+        where: {
+          id: id
+        },
+        data: {
+          name
+        }
+      });
+
+      return {
+        id: result.id,
+        success: true,
+        message: "Classroom updated successfully"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Classroom update failed: " + error
+      };
+    }
   }
 
   async remove(id: number) {

@@ -72,8 +72,31 @@ export class BranchService {
     }
   }
 
-  update(id: number, updateBranchDto: UpdateBranchDto) {
-    return `This action updates a #${id} branch`;
+  async update(id: number, updateBranchDto: UpdateBranchDto) {
+    try {
+      const { name, address, institutionId } = updateBranchDto;
+      const result = await this.prisma.branch.update({
+        where: {
+          id: id
+        },
+        data: {
+          name,
+          address,
+          institutionId
+        }
+      });
+
+      return {
+        id: result.id,
+        success: true,
+        message: "Branch updated successfully"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Branch update failed: " + error
+      };
+    }
   }
 
   async remove(id: number) {

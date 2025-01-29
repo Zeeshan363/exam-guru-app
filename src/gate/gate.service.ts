@@ -13,25 +13,25 @@ export class GateService {
     ){}
 
     async create(CreateGateDto: CreateGateDto) {
-        try {
-            const result = await this.prisma.gate.create({
-              data: {
-                no: CreateGateDto.no,
-                password: CreateGateDto.password,
-                institutionId: CreateGateDto.institutionId
-              }
-            })
-            return {
-              id: result.id,
-              success: true,
-              message: "Gate created successfully"
-            }
-          } catch (error) {
-            return {
-              success: false,
-              message: "Gate creation failed" + error
-            }
+      try {
+        const result = await this.prisma.gate.create({
+          data: {
+            no: CreateGateDto.no,
+            password: CreateGateDto.password,
+            institutionId: CreateGateDto.institutionId
           }
+        })
+        return {
+          id: result.id,
+          success: true,
+          message: "Gate created successfully"
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: "Gate creation failed" + error
+        }
+      }
     }
 
     async findAll(paginationDto: PaginationDto) {
@@ -72,8 +72,30 @@ export class GateService {
       }
     }
 
-    update(id: number, updateGateDto: UpdateGateDto) {
-        return `This action updates a #${id} section`;
+    async update(id: number, updateGateDto: UpdateGateDto) {
+      try {
+        const result = await this.prisma.gate.update({
+          where: {
+            id: id
+          },
+          data: {
+            no: updateGateDto.no,
+            password: updateGateDto.password,
+            institutionId: updateGateDto.institutionId
+          }
+        });
+  
+        return {
+          id: result.id,
+          success: true,
+          message: "Gate updated successfully"
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: "Gate update failed: " + error
+        };
+      }
     }
 
     async remove(id: number) {
