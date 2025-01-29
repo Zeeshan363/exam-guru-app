@@ -49,8 +49,27 @@ export class BranchService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} branch`;
+  async findOne(id: number) {
+    try {
+      const result = await this.prisma.branch.findUnique({
+        where: {
+          id
+        }
+      })
+      if (!result) {
+        throw new BadRequestException("Branch not found")
+      }
+      return {
+        success: true,
+        message: "Branch fetched successfully",
+        data: result
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: "Branch fetch failed" + error
+      }
+    }
   }
 
   update(id: number, updateBranchDto: UpdateBranchDto) {

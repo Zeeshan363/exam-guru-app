@@ -54,8 +54,27 @@ export class ExamsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} exam`;
+  async findOne(id: number) {
+    try {
+      const result = await this.prisma.exam.findUnique({
+        where: {
+          id
+        }
+      })
+      if (!result) {
+        throw new BadRequestException("Exam not found")
+      }
+      return {
+        success: true,
+        message: "Exam fetched successfully",
+        data: result
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: "Exam fetch failed" + error
+      }
+    }
   }
 
   update(id: number, updateExamDto: UpdateExamDto) {

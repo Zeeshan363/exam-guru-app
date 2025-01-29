@@ -47,8 +47,27 @@ export class ClassroomService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} classroom`;
+  async findOne(id: number) {
+    try {
+      const result = await this.prisma.classroom.findUnique({
+        where: {
+          id
+        }
+      })
+      if (!result) {
+        throw new BadRequestException("Classroom not found")
+      }
+      return {
+        success: true,
+        message: "Classroom fetched successfully",
+        data: result
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: "Classroom fetch failed" + error
+      }
+    }
   }
 
   update(id: number, updateClassroomDto: UpdateClassroomDto) {

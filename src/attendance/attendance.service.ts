@@ -51,8 +51,27 @@ export class AttendanceService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} attendance`;
+  async findOne(id: number) {
+    try {
+      const result = await this.prisma.attendance.findUnique({
+        where: {
+          id
+        }
+      })
+      if (!result) {
+        throw new BadRequestException("Attendance not found")
+      }
+      return {
+        success: true,
+        message: "Attendance fetched successfully",
+        data: result
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: "Attendance fetch failed" + error
+      }
+    }
   }
 
   update(id: number, updateAttendanceDto: UpdateAttendanceDto) {

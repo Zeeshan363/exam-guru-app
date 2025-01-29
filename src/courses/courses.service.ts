@@ -48,8 +48,27 @@ export class CoursesService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: number) {
+    try {
+      const result = await this.prisma.course.findUnique({
+        where: {
+          id
+        }
+      })
+      if (!result) {
+        throw new BadRequestException("Course not found")
+      }
+      return {
+        success: true,
+        message: "Course fetched successfully",
+        data: result
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: "Course fetch failed" + error
+      }
+    }
   }
 
   update(id: number, updateCourseDto: UpdateCourseDto) {

@@ -40,4 +40,9 @@ export class InstitutionController {
   findAll(@Query() paginationDto: PaginationDto) {
     return this.institutionService.findAll(paginationDto);
   }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.institutionService.findOne(+id);
+  }
 }

@@ -49,8 +49,27 @@ export class GateService {
         }
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} section`;
+    async findOne(id: number) {
+      try {
+        const result = await this.prisma.gate.findUnique({
+          where: {
+            id
+          }
+        })
+        if (!result) {
+          throw new BadRequestException("Gate not found")
+        }
+        return {
+          success: true,
+          message: "Gate fetched successfully",
+          data: result
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: "Gate fetch failed" + error
+        }
+      }
     }
 
     update(id: number, updateGateDto: UpdateGateDto) {

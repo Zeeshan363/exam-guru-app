@@ -54,4 +54,27 @@ export class InstitutionService {
       throw new BadRequestException("Institutions not found")
     }
   }
+
+  async findOne(id: number) {
+    try {
+      const result = await this.prisma.institution.findUnique({
+        where: {
+          id
+        }
+      })
+      if (!result) {
+        throw new BadRequestException("Institution not found")
+      }
+      return {
+        success: true,
+        message: "Institution fetched successfully",
+        data: result
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: "Institution fetch failed" + error
+      }
+    }
+  }
 }
