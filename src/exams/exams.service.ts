@@ -1,15 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
+import { DatabaseService } from 'src/database/database.service';
+import { PaginationService } from 'src/common/services/pagination.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class ExamsService {
-  create(createExamDto: CreateExamDto) {
-    return 'This action adds a new exam';
+  constructor(
+    private prisma: DatabaseService, 
+    private paginationService: PaginationService
+  ){}
+
+  async create(createExamDto: CreateExamDto) {
+    try {
+      const { name, startTime, endTime, duration, showResultAfter, sendResult, institutionId } = createExamDto;
+      const result = await this.prisma.exam.create({
+        data: {
+          name,
+          startTime, 
+          endTime, 
+          duration, 
+          showResultAfter, 
+          sendResult, 
+          institutionId
+        }
+      })
+      return {
+        id: result.id,
+        success: true,
+        message: "Exam created successfully"
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: "Exam creation failed" + error
+      }
+    }
   }
 
-  findAll() {
-    return `This action returns all exams`;
+  async findAll(paginationDto: PaginationDto) {
+    try {
+      const result = await this.paginationService.paginate(
+        this.prisma.exam,
+        paginationDto,
+        {},
+        {}
+      );
+
+      return result; 
+    } catch (error) {
+      throw new BadRequestException("Exams not found")
+    }
   }
 
   findOne(id: number) {
