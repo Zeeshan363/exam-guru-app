@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ValidationPipe, Query } from '@nestjs/common';
 import { InstitutionService } from './institution.service';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { ApiHeader, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiResponse } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('institution')
 export class InstitutionController {
@@ -32,5 +33,11 @@ export class InstitutionController {
         message: "Institution creation failed" + error
       }
     }
+  }
+
+  @ApiResponse({ status: 200, description: 'Institutions fetched successfully.' })
+  @Get()
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.institutionService.findAll(paginationDto);
   }
 }
